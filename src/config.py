@@ -6,12 +6,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Key validation
+    # 1. Key validation (Attempt System Env, then fallback to Streamlit Cloud Secrets)
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    
+    if not GOOGLE_API_KEY:
+        try:
+            import streamlit as st
+            GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+        except Exception:
+            pass
+
+    # If both lookup attempts fail, raise the helpful ValueError
     if not GOOGLE_API_KEY:
         raise ValueError(
             "CRITICAL ERROR: GOOGLE_API_KEY is not set. Please check your .env file "
-            "or host-provided environment variables."
+            "or your Streamlit Cloud Secrets settings."
         )
 
     # Base Paths
@@ -22,9 +31,8 @@ class Config:
     FAISS_INDEX_DIR = os.getenv("FAISS_INDEX_PATH", "faiss_index")
     FAISS_INDEX_PATH = BASE_DIR / FAISS_INDEX_DIR
 
-   
     # Model parameters
-    LLM_MODEL_NAME = "gemini-2.5-flash"  # <-- Update to the active 2.5 Flash model
+    LLM_MODEL_NAME = "gemini-2.5-flash"
     EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview"
 
     @classmethod
