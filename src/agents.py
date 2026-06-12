@@ -1,5 +1,5 @@
 import json
-from langchain_classic.agents import AgentExecutor, create_tool_calling_agent  # <-- Imported from langchain_classic
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 from langchain.tools import tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -138,6 +138,10 @@ def get_placement_mentor_agent():
         "You are 'CampusHire AI Mentor', a supportive and brilliant conversational career coach "
         "and placement coordinator. Your job is to guide students step-by-step through their placement "
         "preparation journey.\n\n"
+        "IMPORTANT LENGTH LIMITATION: Your responses must be extremely concise, brief, and "
+        "straight to the point (no more than 1 or 2 short paragraphs). Avoid outputting extremely long lists "
+        "or repeating yourself. Since you are displayed in a narrow sidebar chatbot panel, "
+        "keep formatting clean, compact, and highly scannable.\n\n"
         "You have access to a suite of highly specialized tools:\n"
         "- Use `resume_analyzer_tool` to parse raw resume text.\n"
         "- Use `jd_matcher_tool` to search for jobs and match scores.\n"

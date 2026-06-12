@@ -51,6 +51,8 @@ if "mock_answers" not in st.session_state:
     st.session_state.mock_answers = {}
 if "mock_feedback" not in st.session_state:
     st.session_state.mock_feedback = {}
+if "pending_chat_msg" not in st.session_state:
+    st.session_state.pending_chat_msg = ""
 
 
 # ==========================================
@@ -89,6 +91,18 @@ def clean_agent_output(output) -> str:
     return str(output)
 
 
+def handle_chat_submit():
+    """
+    Callback function that safely grabs the chat input, stashes it,
+    and clears the text input widget to prevent infinite looping reruns.
+    """
+    user_msg = st.session_state.agent_chat_input.strip()
+    if user_msg:
+        st.session_state.pending_chat_msg = user_msg
+    # Clear the input box value instantly
+    st.session_state.agent_chat_input = ""
+
+
 # ==========================================
 # 4. SIDEBAR - FILE UPLOAD & CONFIG
 # ==========================================
@@ -118,10 +132,19 @@ with st.sidebar:
         else:
             st.markdown(f"**🤖 Mentor:** {text}")
 
-    # Chat text input field
-    user_chat_input = st.text_input("Type your message and press Enter...", key="agent_chat_input")
+    # Chat text input field (Using the Callback Handler)
+    st.text_input(
+        "Type your message and press Enter...", 
+        key="agent_chat_input",
+        on_change=handle_chat_submit
+    )
 
-    if user_chat_input.strip():
+    # Process the chat input safely using the stashed message
+    if st.session_state.pending_chat_msg:
+        user_msg = st.session_state.pending_chat_msg
+        # Clear the stashed message immediately so it can never trigger again on next clicks
+        st.session_state.pending_chat_msg = ""
+        
         with st.spinner("Mentor is typing..."):
             try:
                 # Retrieve the LangChain agent executor
@@ -129,7 +152,7 @@ with st.sidebar:
                 
                 # Execute the agent
                 response = agent_exec.invoke({
-                    "input": user_chat_input.strip(),
+                    "input": user_msg,
                     "chat_history": st.session_state.chat_history
                 })
                 
@@ -137,7 +160,7 @@ with st.sidebar:
                 clean_response = clean_agent_output(response["output"])
                 
                 # Store cleaned message in history
-                st.session_state.chat_history.append(("human", user_chat_input.strip()))
+                st.session_state.chat_history.append(("human", user_msg))
                 st.session_state.chat_history.append(("ai", clean_response))
                 
                 # Force UI reload to display messages instantly
