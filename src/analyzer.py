@@ -12,13 +12,12 @@ class SkillGapItem(BaseModel):
 
 class SkillGapAnalysis(BaseModel):
     target_role: str = Field(description="The job title evaluated")
-    match_percentage: int = Field(description="Calculated skill alignment (0-100%)")
+    match_percentage: str = Field(description="Calculated overall skill alignment percentage (e.g. '50' or '50%')") # <-- Changed to str
     strengths: List[str] = Field(description="Key relevant skills the candidate possesses")
     missing_skills: List[SkillGapItem] = Field(description="List of skills the candidate lacks")
     key_recommendation: str = Field(description="A structured professional upskilling recommendation")
 
 def analyze_skill_gaps(resume: ParsedResume, target_jd_text: str, target_jd_title: str) -> SkillGapAnalysis:
-    # Call Centralized LLM Factory
     llm = Config.get_llm(temperature=0.0)
     structured_llm = llm.with_structured_output(SkillGapAnalysis)
 

@@ -7,11 +7,11 @@ from src.analyzer import SkillGapAnalysis
 
 class RoadmapTask(BaseModel):
     task_title: str = Field(description="The concept or framework to master")
-    estimated_hours: int = Field(description="Study and practice hours needed")
+    estimated_hours: str = Field(description="Study and practice hours needed (e.g., '8 hours' or '10')") # <-- Changed to str
     resources: List[str] = Field(description="Recommended online resources or search terms")
 
 class RoadmapWeek(BaseModel):
-    week_number: int = Field(description="The sequential week number")
+    week_number: str = Field(description="The sequential week number (e.g., '1' or 'Week 1')") # <-- Changed to str
     theme: str = Field(description="The focus theme of this week")
     tasks: List[RoadmapTask] = Field(description="Syllabus topics to study")
     hands_on_project: str = Field(description="A mini-project to apply this week's learnings")
@@ -19,12 +19,11 @@ class RoadmapWeek(BaseModel):
 
 class PersonalizedRoadmap(BaseModel):
     role: str = Field(description="The target role analyzed")
-    duration_weeks: int = Field(description="Total weeks in this roadmap")
+    duration_weeks: str = Field(description="Total weeks in this roadmap (e.g., '4' or '4 Weeks')") # <-- Changed to str
     weeks: List[RoadmapWeek] = Field(description="Week-by-week learning syllabus")
     general_tips: List[str] = Field(default=[], description="Strategic prep tips")
 
 def generate_personalized_roadmap(resume: ParsedResume, gap_analysis: SkillGapAnalysis) -> PersonalizedRoadmap:
-    # Call Centralized LLM Factory with moderate temperature
     llm = Config.get_llm(temperature=0.2)
     structured_llm = llm.with_structured_output(PersonalizedRoadmap)
 

@@ -6,20 +6,32 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from src.config import Config
 from src.parser import ParsedResume
 
+# ==========================================
+# 1. DEFINE MATCH EVALUATION SCHEMAS
+# ==========================================
+
 class JobMatchEvaluation(BaseModel):
     jd_id: int = Field(description="The unique metadata ID of the matching job description")
     title: str = Field(description="Job Title from the matching job description")
-    match_score: int = Field(description="A numeric score from 0 to 100 based on alignment")
-    matched_skills: List[str] = Field(description="Required job skills the candidate has")
-    missing_skills: List[str] = Field(description="Critical required skills the candidate lacks")
-    reasoning: str = Field(description="A concise summary explaining why this match score was assigned")
+    match_score: str = Field(description="A numeric matching percentage (e.g. '85' or '85%')") # <-- Changed to str
+    matched_skills: List[str] = Field(description="List of required job skills that the candidate already has in their resume")
+    missing_skills: List[str] = Field(description="List of critical required skills or technologies from the JD that are missing from the candidate's resume")
+    reasoning: str = Field(description="A concise, professional explanation summarizing why this match score was assigned, referring to experience and projects")
 
 class MatchResults(BaseModel):
-    matches: List[JobMatchEvaluation] = Field(description="List of matching job evaluations")
+    matches: List[JobMatchEvaluation] = Field(description="List of matching job evaluations sorted by highest match score first")
+
+
+# ==========================================
+# 2. MATCH ENGINE IMPLEMENTATION
+# ==========================================
 
 def retrieve_matching_jds(query_text: str, k: int = 3) -> list:
     if not Config.FAISS_INDEX_PATH.exists():
-        raise FileNotFoundError(f"FAISS index folder not found at {Config.FAISS_INDEX_PATH}.")
+        raise FileNotFoundError(
+            f"FAISS index folder not found at {Config.FAISS_INDEX_PATH}. "
+            f"Please run the ingestion pipeline ('python -m src.ingest') first."
+        )
 
     embeddings = GoogleGenerativeAIEmbeddings(
         model=Config.EMBEDDING_MODEL_NAME,
@@ -45,6 +57,7 @@ def retrieve_matching_jds(query_text: str, k: int = 3) -> list:
             break
             
     return unique_docs
+
 
 def evaluate_matches(resume: ParsedResume, matched_docs: list) -> MatchResults:
     # Call Centralized LLM Factory

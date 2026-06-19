@@ -6,7 +6,7 @@ from src.parser import ParsedResume
 from src.analyzer import SkillGapAnalysis
 
 class InterviewQuestion(BaseModel):
-    question_id: int = Field(description="Unique incremental ID for the question")
+    question_id: str = Field(description="Unique incremental ID for the question (e.g., '1' or 'Q1')") # <-- Changed to str
     category: str = Field(description="Technical (Strength), Technical (Gap), Project-Based, or Behavioral")
     question: str = Field(description="The mock interview question")
     difficulty: str = Field(description="Difficulty: Easy, Medium, or Hard")
@@ -15,11 +15,10 @@ class InterviewQuestion(BaseModel):
 
 class MockInterviewSet(BaseModel):
     role: str = Field(description="The target job title")
-    total_questions: int = Field(description="Total questions generated")
+    total_questions: str = Field(description="Total questions generated (e.g. '6' or '6 Questions')") # <-- Changed to str
     questions: List[InterviewQuestion] = Field(description="List of mock interview questions")
 
 def generate_mock_interview(resume: ParsedResume, gap_analysis: SkillGapAnalysis, num_questions: int = 6) -> MockInterviewSet:
-    # Call Centralized LLM Factory
     llm = Config.get_llm(temperature=0.4)
     structured_llm = llm.with_structured_output(MockInterviewSet)
 
@@ -51,7 +50,6 @@ def generate_mock_interview(resume: ParsedResume, gap_analysis: SkillGapAnalysis
     })
 
 def evaluate_candidate_mock_response(question: str, ideal_rubric: str, user_response: str) -> str:
-    # Call Centralized LLM Factory with low temperature for grading
     llm = Config.get_llm(temperature=0.2)
     
     system_prompt = (
