@@ -99,7 +99,7 @@ def handle_chat_submit():
     user_msg = st.session_state.agent_chat_input.strip()
     if user_msg:
         st.session_state.pending_chat_msg = user_msg
-    # Clear the input box value instantly
+    # Clear the input box value instantly in session state
     st.session_state.agent_chat_input = ""
 
 

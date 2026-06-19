@@ -8,3 +8,4 @@ pymupdf>=1.23.0
 pandas>=2.0.0
 python-dotenv>=1.0.0
 pydantic>=2.0.0
+langchain-nvidia-ai-endpoints>=1.4.1
