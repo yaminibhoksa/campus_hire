@@ -74,15 +74,11 @@ def roadmap_generator_tool(gap_analysis_json_str: str) -> str:
 
 @tool
 def mock_interview_tool(resume_json_str: str, gap_analysis_json_str: str) -> str:
-    """
-    Generates tailored mock interview questions with answers based on the parsed resume (JSON string) 
-    and identified skill gap analysis (JSON string).
-    """
+    """Generates tailored mock interview questions based on candidate profile and gap report."""
     try:
         from src.analyzer import SkillGapAnalysis
         resume_dict = json.loads(resume_json_str)
         resume_obj = ParsedResume(**resume_dict)
-        
         gap_dict = json.loads(gap_analysis_json_str)
         gap_obj = SkillGapAnalysis(**gap_dict)
         
@@ -111,6 +107,10 @@ def get_placement_mentor_agent():
     system_prompt = (
         "You are 'CampusHire AI Mentor', a supportive and brilliant career coach. "
         "Your job is to guide students step-by-step through their placement preparation.\n\n"
+        "IMPORTANT RULES FOR TOOL CALLING:\n"
+        "1. For simple greetings (such as 'hi', 'hello', 'hey', 'good morning'), general conversation, or small talk, "
+        "DO NOT CALL ANY TOOLS. Simply reply to the user with a short, friendly greeting and ask how you can help them.\n"
+        "2. ONLY call a tool when the user explicitly requests an operation that requires that specific tool's output.\n\n"
         "IMPORTANT LENGTH LIMITATION: Your responses must be extremely concise, brief, and "
         "straight to the point (no more than 1 or 2 short paragraphs). Avoid outputting extremely long lists. "
         "Keep formatting clean and compact.\n\n"

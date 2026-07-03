@@ -14,9 +14,9 @@ class Config:
     FAISS_INDEX_DIR = os.getenv("FAISS_INDEX_PATH", "faiss_index")
     FAISS_INDEX_PATH = BASE_DIR / FAISS_INDEX_DIR
 
-    # Model parameters
-    LLM_MODEL_NAME = "meta/llama-3.3-70b-instruct"  # High-reasoning NVIDIA model
-    EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview" # Handled separately via Google
+    # Model parameters (Switched to Llama 3.1 8B for maximum speed and 0 timeouts)
+    LLM_MODEL_NAME = "meta/llama-3.1-8b-instruct"  
+    EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview" 
 
     # 2. Key validation and Fallbacks (System Env ➔ Streamlit Secrets)
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -39,7 +39,7 @@ class Config:
     def get_llm(cls, temperature: float = 0.0):
         """
         Centralized LLM Factory. Imports and returns the NVIDIA ChatNVIDIA model.
-        Changing models in the future only requires editing this single function.
+        Removes the 'timeout' parameter to prevent 400 Validation errors.
         """
         if not cls.NVIDIA_API_KEY:
             raise ValueError(
