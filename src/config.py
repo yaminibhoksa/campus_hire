@@ -15,8 +15,9 @@ class Config:
     FAISS_INDEX_PATH = BASE_DIR / FAISS_INDEX_DIR
 
     # Model parameters (Switched back to Google's highly stable 2.0 Flash)
-    LLM_MODEL_NAME = "gemini-2.0-flash"  
-    EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview" 
+    # Model parameters (Switched to high-RPM 2.0 Flash Lite)
+    LLM_MODEL_NAME = "gemini-2.0-flash-lite"  
+    EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview"
 
     # 2. Key validation and Fallbacks (System Env ➔ Streamlit Secrets)
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
