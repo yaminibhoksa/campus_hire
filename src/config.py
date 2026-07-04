@@ -16,7 +16,7 @@ class Config:
 
     # Model parameters (Switched back to Google's highly stable 2.0 Flash)
     # Model parameters (Switched to high-RPM 2.0 Flash Lite)
-    LLM_MODEL_NAME = "gemini-2.0-flash-lite"  
+    LLM_MODEL_NAME = "gemini-2.5-flash"  
     EMBEDDING_MODEL_NAME = "gemini-embedding-2-preview"
 
     # 2. Key validation and Fallbacks (System Env ➔ Streamlit Secrets)
